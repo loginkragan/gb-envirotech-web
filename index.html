@@ -3251,10 +3251,25 @@
 
     // Form Submission Handling & REST Backend API Integration
     
-    // Central Email Lead Delivery to info@gbenvirotech.com (Titan Mail)
+    const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw-0hzmbk-Eg1o_1ctkhtmrsAUzLwDSSora-mCCrgkCVvqU2_nhymV678vSm_s-XjmGZg/exec';
+
+    // Central Lead Delivery: Direct to Google Sheet + Titan Mail Alert
     async function deliverLeadToEmail(leadData) {
+      // 1. Send directly to Google Sheet (info@gbenvirotech.com)
       try {
-        await fetch('https://formsubmit.co/ajax/info@gbenvirotech.com', {
+        fetch(GOOGLE_SHEET_WEBAPP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(leadData)
+        });
+      } catch (err) {
+        console.log('Google Sheet logging status:', err);
+      }
+
+      // 2. Instant notification to info@gbenvirotech.com
+      try {
+        fetch('https://formsubmit.co/ajax/info@gbenvirotech.com', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -3268,7 +3283,7 @@
           })
         });
       } catch (err) {
-        console.log('Background email notification status:', err);
+        console.log('Titan email notification status:', err);
       }
     }
 
