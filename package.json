@@ -1,0 +1,26 @@
+{
+  "name": "gb-envirotech-web",
+  "version": "1.0.0",
+  "description": "GB ENVIROTECH - Commercial Plant Tissue Culture & Biotechnology Web Platform & Backend API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "tissue-culture",
+    "biotechnology",
+    "micropropagation",
+    "plantlets",
+    "agritech",
+    "jodhpur"
+  ],
+  "author": "GB ENVIROTECH",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "nodemailer": "^6.9.16"
+  }
+}

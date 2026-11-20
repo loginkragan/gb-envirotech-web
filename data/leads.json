@@ -1,0 +1,26 @@
+[
+  {
+    "id": "GBE-2026-7235",
+    "type": "rfq",
+    "createdAt": "2026-11-13T16:26:34.148Z",
+    "crop": "Grand Naine G9 Banana",
+    "stage": "Secondary Hardened (Field Ready)",
+    "quantity": 2500,
+    "acreage": 2,
+    "name": "Ramesh Patel",
+    "organization": "Marwar Agro Nursery",
+    "phone": "+91 94607 69323",
+    "email": null,
+    "state": "Jodhpur, Rajasthan",
+    "timeline": "Standard Dispatch Window",
+    "gstin": null,
+    "notes": "Interested in pre-booking for July 2026 dispatch.",
+    "status": "NEW",
+    "history": [
+      {
+        "action": "Created via Web RFQ Modal",
+        "time": "2026-11-13T16:26:34.148Z"
+      }
+    ]
+  }
+]

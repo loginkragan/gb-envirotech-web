@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Lead CRM | GB ENVIROTECH</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+              950: '#052e16',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- Login Modal Overlay (Shown if not authenticated) -->
+  <div id="loginOverlay" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-200">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-12 h-12 rounded-2xl bg-brand-50 border border-brand-200 p-2 flex items-center justify-center">
+          <img src="assets/logo-emblem-128.png" alt="GB Envirotech Emblem" class="w-full h-full object-contain">
+        </div>
+        <div>
+          <h2 class="text-xl font-black text-slate-900">GB <span class="text-brand-700">ENVIROTECH</span></h2>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Admin CRM Login</p>
+        </div>
+      </div>
+      
+      <p class="text-sm text-slate-600 mb-6">Enter your administrative security password to access commercial RFQs, nursery dispatches, and customer leads.</p>
+      
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Admin Security Key</label>
+          <input type="password" id="adminPasswordInput" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:outline-none text-slate-900" placeholder="••••••••••••" required>
+        </div>
+        <p id="loginError" class="text-xs text-rose-600 font-bold hidden"></p>
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-brand-700 hover:bg-brand-800 text-white font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-brand-700/30">
+          <i data-lucide="lock" class="w-4 h-4"></i>
+          <span>Authenticate & Access Dashboard</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Top Navbar -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center">
+          <img src="assets/logo-emblem-128.png" alt="GB Emblem" class="w-full h-full object-contain">
+        </div>
+        <div>
+          <span class="font-black text-base tracking-tight text-white">GB <span class="text-brand-400">ENVIROTECH</span></span>
+          <span class="text-[10px] font-bold text-slate-400 block tracking-wider uppercase">Lead CRM & Agronomy Desk</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="/" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          <span>View Live Website</span>
+        </a>
+        <button onclick="downloadCSV()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span>Export CSV</span>
+        </button>
+        <button onclick="logout()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-900 hover:text-white text-xs font-semibold text-slate-300 transition">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+    
+    <!-- Metrics Bar -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between text-slate-500 mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider">Total Leads</span>
+          <i data-lucide="users" class="w-4 h-4 text-brand-600"></i>
+        </div>
+        <p class="text-3xl font-black text-slate-900" id="statTotal">0</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between text-slate-500 mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider">Commercial RFQs</span>
+          <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i>
+        </div>
+        <p class="text-3xl font-black text-emerald-700" id="statRFQ">0</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between text-slate-500 mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider">Total Plantlets Needed</span>
+          <i data-lucide="sprout" class="w-4 h-4 text-brand-700"></i>
+        </div>
+        <p class="text-3xl font-black text-slate-900" id="statPlants">0</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between text-slate-500 mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider">Pending Action</span>
+          <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+        </div>
+        <p class="text-3xl font-black text-amber-600" id="statPending">0</p>
+      </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 flex-1 min-w-[240px]">
+        <div class="relative w-full">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5"></i>
+          <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search by name, phone, crop, state, or ID..." class="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <select id="statusFilter" onchange="applyFilters()" class="px-3 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <option value="">All Statuses</option>
+          <option value="NEW">⚡ New Inquiries</option>
+          <option value="CONTACTED">📞 Contacted</option>
+          <option value="QUOTED">📄 Quote Sent</option>
+          <option value="IN_PRODUCTION">🌱 In Production</option>
+          <option value="DISPATCHED">🚚 Dispatched</option>
+        </select>
+
+        <select id="typeFilter" onchange="applyFilters()" class="px-3 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <option value="">All Types</option>
+          <option value="rfq">Commercial RFQ</option>
+          <option value="contact">General Contact</option>
+        </select>
+
+        <button onclick="loadLeads()" class="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 transition" title="Refresh">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Leads Table -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold text-[11px]">
+              <th class="p-4">Lead ID & Date</th>
+              <th class="p-4">Customer Details</th>
+              <th class="p-4">Crop & Requirement</th>
+              <th class="p-4">Quantity / Acreage</th>
+              <th class="p-4">Status</th>
+              <th class="p-4 text-right">Quick Actions</th>
+            </tr>
+          </thead>
+          <tbody id="leadsTableBody" class="divide-y divide-slate-100">
+            <tr>
+              <td colspan="6" class="p-8 text-center text-slate-400">Loading inquiries...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Lead Detail Modal -->
+  <div id="leadModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-6">
+        <div>
+          <span id="modalLeadId" class="text-xs font-mono font-bold text-brand-700 bg-brand-50 px-2.5 py-1 rounded-md"></span>
+          <h3 id="modalLeadTitle" class="text-lg font-black text-slate-900 mt-2"></h3>
+        </div>
+        <button onclick="closeModal()" class="p-2 text-slate-400 hover:text-slate-700 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="modalBody" class="space-y-4 text-xs sm:text-sm text-slate-700"></div>
+
+      <div class="mt-8 pt-4 border-t border-slate-200 flex items-center justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-slate-500 uppercase">Update Status:</span>
+          <select id="modalStatusSelect" class="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold">
+            <option value="NEW">NEW</option>
+            <option value="CONTACTED">CONTACTED</option>
+            <option value="QUOTED">QUOTED</option>
+            <option value="IN_PRODUCTION">IN_PRODUCTION</option>
+            <option value="DISPATCHED">DISPATCHED</option>
+          </select>
+          <button onclick="saveModalStatus()" class="px-3 py-1.5 rounded-lg bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs">Save</button>
+        </div>
+
+        <button onclick="closeModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700 text-xs">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allLeads = [];
+    let currentAuthToken = localStorage.getItem('gb_admin_token') || '';
+    let selectedLeadId = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      if (currentAuthToken) {
+        document.getElementById('loginOverlay').classList.add('hidden');
+        loadLeads();
+      }
+    });
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const password = document.getElementById('adminPasswordInput').value;
+      const errorEl = document.getElementById('loginError');
+      errorEl.classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          currentAuthToken = data.token;
+          localStorage.setItem('gb_admin_token', currentAuthToken);
+          document.getElementById('loginOverlay').classList.add('hidden');
+          loadLeads();
+        } else {
+          errorEl.innerText = data.error || 'Authentication failed.';
+          errorEl.classList.remove('hidden');
+        }
+      } catch (err) {
+        errorEl.innerText = 'Could not connect to server.';
+        errorEl.classList.remove('hidden');
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('gb_admin_token');
+      currentAuthToken = '';
+      document.getElementById('loginOverlay').classList.remove('hidden');
+    }
+
+    async function loadLeads() {
+      try {
+        const res = await fetch('/api/admin/leads', {
+          headers: { 'x-admin-token': currentAuthToken }
+        });
+        if (res.status === 401) {
+          logout();
+          return;
+        }
+        const data = await res.json();
+        if (data.success) {
+          allLeads = data.leads || [];
+          updateMetrics(data.metrics);
+          renderTable(allLeads);
+        }
+      } catch (err) {
+        console.error('Failed to fetch leads:', err);
+      }
+    }
+
+    function updateMetrics(metrics) {
+      if (!metrics) return;
+      document.getElementById('statTotal').innerText = metrics.total || 0;
+      document.getElementById('statRFQ').innerText = metrics.rfqCount || 0;
+      document.getElementById('statPlants').innerText = (metrics.totalPlantletsRequested || 0).toLocaleString('en-IN');
+      document.getElementById('statPending').innerText = metrics.newCount || 0;
+    }
+
+    function applyFilters() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const status = document.getElementById('statusFilter').value;
+      const type = document.getElementById('typeFilter').value;
+
+      const filtered = allLeads.filter(l => {
+        const matchSearch = !search || 
+          (l.name && l.name.toLowerCase().includes(search)) ||
+          (l.phone && l.phone.toLowerCase().includes(search)) ||
+          (l.crop && l.crop.toLowerCase().includes(search)) ||
+          (l.id && l.id.toLowerCase().includes(search)) ||
+          (l.state && l.state.toLowerCase().includes(search));
+        
+        const matchStatus = !status || l.status === status;
+        const matchType = !type || l.type === type;
+
+        return matchSearch && matchStatus && matchType;
+      });
+
+      renderTable(filtered);
+    }
+
+    function renderTable(leads) {
+      const tbody = document.getElementById('leadsTableBody');
+      if (!leads || leads.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No customer inquiries found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = leads.map(l => {
+        const cleanPhone = (l.phone || '').replace(/[^0-9]/g, '');
+        const dateStr = new Date(l.createdAt).toLocaleDateString('en-IN', {
+          day: 'numeric', month: 'short', year: 'numeric'
+        });
+
+        let statusBadge = '';
+        if (l.status === 'NEW') statusBadge = '<span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-[11px]">⚡ New</span>';
+        else if (l.status === 'CONTACTED') statusBadge = '<span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 font-bold text-[11px]">📞 Contacted</span>';
+        else if (l.status === 'QUOTED') statusBadge = '<span class="px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 font-bold text-[11px]">📄 Quoted</span>';
+        else if (l.status === 'IN_PRODUCTION') statusBadge = '<span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[11px]">🌱 Production</span>';
+        else if (l.status === 'DISPATCHED') statusBadge = '<span class="px-2.5 py-1 rounded-full bg-slate-200 text-slate-800 font-bold text-[11px]">🚚 Dispatched</span>';
+
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="p-4">
+              <span class="font-mono font-bold text-brand-700 block">${l.id}</span>
+              <span class="text-slate-400 text-xs">${dateStr}</span>
+            </td>
+            <td class="p-4">
+              <div class="font-bold text-slate-900">${escapeHtml(l.name)}</div>
+              <div class="text-xs text-slate-500">${escapeHtml(l.organization || 'Individual Farm')}</div>
+              <div class="text-xs text-slate-500">${escapeHtml(l.state || '')}</div>
+            </td>
+            <td class="p-4">
+              <div class="font-bold text-slate-800">${escapeHtml(l.crop || l.subject || 'General Inquiry')}</div>
+              <div class="text-xs text-slate-500">${escapeHtml(l.stage || '')}</div>
+            </td>
+            <td class="p-4">
+              <div class="font-black text-slate-900">${l.quantity ? Number(l.quantity).toLocaleString('en-IN') + ' Plants' : 'N/A'}</div>
+              <div class="text-xs text-slate-500">${l.acreage ? l.acreage + ' Acres' : ''}</div>
+            </td>
+            <td class="p-4">
+              ${statusBadge}
+            </td>
+            <td class="p-4 text-right">
+              <div class="inline-flex items-center gap-1.5">
+                ${cleanPhone ? `
+                  <a href="https://wa.me/${cleanPhone}?text=Hello%20${encodeURIComponent(l.name)},%20this%20is%20GB%20ENVIROTECH%20technical%20desk%20regarding%20your%20quotation%20request%20${l.id}" target="_blank" class="p-2 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white transition" title="WhatsApp Message">
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                  </a>
+                  <a href="tel:${cleanPhone}" class="p-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white transition" title="Call">
+                    <i data-lucide="phone" class="w-4 h-4"></i>
+                  </a>
+                ` : ''}
+                <button onclick="viewLead('${l.id}')" class="p-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-brand-700 hover:text-white transition" title="View & Edit">
+                  <i data-lucide="eye" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function viewLead(id) {
+      const lead = allLeads.find(l => l.id === id);
+      if (!lead) return;
+
+      selectedLeadId = id;
+      document.getElementById('modalLeadId').innerText = lead.id;
+      document.getElementById('modalLeadTitle').innerText = lead.crop || lead.subject || 'Lead Details';
+      document.getElementById('modalStatusSelect').value = lead.status || 'NEW';
+
+      const isRFQ = lead.type === 'rfq';
+      document.getElementById('modalBody').innerHTML = `
+        <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+          <div><strong class="text-slate-500 block text-xs">Customer Name:</strong> <span class="font-bold text-slate-900">${escapeHtml(lead.name)}</span></div>
+          <div><strong class="text-slate-500 block text-xs">Farm / Company:</strong> ${escapeHtml(lead.organization || 'N/A')}</div>
+          <div><strong class="text-slate-500 block text-xs">Phone / WhatsApp:</strong> <a href="tel:${lead.phone}" class="text-brand-700 font-bold">${lead.phone || 'N/A'}</a></div>
+          <div><strong class="text-slate-500 block text-xs">Email:</strong> ${lead.email || 'N/A'}</div>
+          <div><strong class="text-slate-500 block text-xs">State / District:</strong> ${escapeHtml(lead.state || 'N/A')}</div>
+          <div><strong class="text-slate-500 block text-xs">GSTIN:</strong> ${escapeHtml(lead.gstin || 'N/A')}</div>
+        </div>
+
+        ${isRFQ ? `
+          <div class="bg-brand-50/50 p-4 rounded-2xl border border-brand-200/60 mt-3">
+            <h4 class="font-bold text-brand-900 mb-2">Commercial Agronomy Specs</h4>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div><strong class="text-slate-500 block text-xs">Crop:</strong> <span class="font-bold">${escapeHtml(lead.crop)}</span></div>
+              <div><strong class="text-slate-500 block text-xs">Supply Stage:</strong> ${escapeHtml(lead.stage)}</div>
+              <div><strong class="text-slate-500 block text-xs">Quantity:</strong> <span class="font-black text-brand-800">${lead.quantity ? Number(lead.quantity).toLocaleString('en-IN') : 'N/A'} Plantlets</span></div>
+              <div><strong class="text-slate-500 block text-xs">Acreage:</strong> ${lead.acreage ? lead.acreage + ' Acres' : 'N/A'}</div>
+              <div><strong class="text-slate-500 block text-xs">Timeline:</strong> ${escapeHtml(lead.timeline || 'Standard')}</div>
+            </div>
+          </div>
+        ` : ''}
+
+        <div class="mt-3">
+          <strong class="text-slate-500 block text-xs mb-1">Customer Message / Notes:</strong>
+          <div class="p-3 bg-white rounded-xl border border-slate-200 text-slate-800 whitespace-pre-wrap">${escapeHtml(lead.notes || lead.message || 'None provided.')}</div>
+        </div>
+      `;
+
+      document.getElementById('leadModal').classList.remove('hidden');
+      document.getElementById('leadModal').classList.add('flex');
+    }
+
+    async function saveModalStatus() {
+      if (!selectedLeadId) return;
+      const newStatus = document.getElementById('modalStatusSelect').value;
+
+      try {
+        const res = await fetch(`/api/admin/leads/${selectedLeadId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': currentAuthToken
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+        const data = await res.json();
+        if (data.success) {
+          closeModal();
+          loadLeads();
+        }
+      } catch (err) {
+        alert('Failed to update status.');
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('leadModal').classList.add('hidden');
+      document.getElementById('leadModal').classList.remove('flex');
+      selectedLeadId = null;
+    }
+
+    function downloadCSV() {
+      window.location.href = `/api/admin/export?token=${encodeURIComponent(currentAuthToken)}`;
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
