@@ -3250,6 +3250,28 @@
     });
 
     // Form Submission Handling & REST Backend API Integration
+    
+    // Central Email Lead Delivery to loginkragan@gmail.com
+    async function deliverLeadToEmail(leadData) {
+      try {
+        await fetch('https://formsubmit.co/ajax/loginkragan@gmail.com', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            _subject: `New Lead: ${leadData.type || 'Inquiry'} - ${leadData.Name || 'Visitor'} (GB Envirotech)`,
+            _template: 'table',
+            _captcha: 'false',
+            ...leadData
+          })
+        });
+      } catch (err) {
+        console.log('Background email notification status:', err);
+      }
+    }
+
     const enquiryForm = document.getElementById('enquiryForm');
     const formSuccessMessage = document.getElementById('formSuccessMessage');
     let latestEnquiryLeadId = 'GBE-2026-INQUIRY';
@@ -3288,6 +3310,19 @@
       } catch (err) {
         console.log('Operating in direct client mode:', err);
       }
+
+      deliverLeadToEmail({
+        type: 'Commercial B2B Quotation',
+        Name: payload.name,
+        Organization: payload.organization || 'N/A',
+        Phone: payload.phone,
+        Email: payload.email || 'N/A',
+        Crop: payload.crop,
+        Stage: payload.stage,
+        Quantity: payload.quantity,
+        Location: payload.state,
+        Notes: payload.notes || 'N/A'
+      });
 
       submitBtn.innerHTML = origBtnHtml;
       submitBtn.disabled = false;
@@ -3372,6 +3407,17 @@
         } catch (err) {
           console.log('Operating in direct client mode:', err);
         }
+
+        deliverLeadToEmail({
+          type: 'Quick Quote Modal',
+          Name: payload.name,
+          Organization: payload.organization || 'N/A',
+          Phone: payload.phone,
+          Crop: payload.crop,
+          Stage: payload.stage,
+          Quantity: payload.quantity,
+          Location: payload.state
+        });
 
         submitBtn.innerHTML = origBtnHtml;
         submitBtn.disabled = false;
@@ -3540,6 +3586,19 @@
           console.log('Operating in direct client mode:', err);
         }
 
+        deliverLeadToEmail({
+          type: 'Institutional Training Application',
+          Name: name,
+          Email: email,
+          Phone: phone,
+          College: college,
+          Course: course,
+          Track: track,
+          Duration: duration,
+          Preferred_Start: startDate,
+          Notes: notes || 'N/A'
+        });
+
         submitBtn.innerHTML = origBtnHtml;
         submitBtn.disabled = false;
         traineeForm.classList.add('hidden');
@@ -3628,6 +3687,20 @@
         } catch (err) {
           console.log('Operating in direct client mode:', err);
         }
+
+        deliverLeadToEmail({
+          type: 'Career Application',
+          Name: name,
+          Email: email,
+          Phone: phone,
+          Location: location,
+          Qualification: qualification,
+          Experience: experience,
+          Role_Applied: role,
+          LinkedIn: linkedin || 'N/A',
+          Resume_Link: resumeLink || 'N/A',
+          Notes: notes || 'N/A'
+        });
 
         submitBtn.innerHTML = origBtnHtml;
         submitBtn.disabled = false;
