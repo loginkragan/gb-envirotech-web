@@ -313,7 +313,7 @@
         </nav>
 
         <!-- CTA Action Buttons -->
-        <div class="hidden sm:flex items-center shrink-0 ml-2 xl:ml-3 2xl:ml-6">
+        <div class="hidden xl:flex items-center shrink-0 ml-2 xl:ml-3 2xl:ml-6">
           <button onclick="openQuickQuoteModal()" class="px-3 py-2 xl:px-4 xl:py-2.5 2xl:px-5.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white bg-brand-700 hover:bg-brand-800 shadow-md shadow-brand-700/25 transition flex items-center gap-1.5 2xl:gap-2 whitespace-nowrap active:scale-95 focus:outline-none focus:ring-4 focus:ring-brand-500/40">
             <i data-lucide="file-text" class="w-3.5 h-3.5 2xl:w-4 2xl:h-4 shrink-0"></i>
             <span class="hidden 2xl:inline" data-i18n="btnRequestQuote">Request Bulk Quote</span>
@@ -345,7 +345,7 @@
       </a>
       <a href="#contact" class="block px-3 py-2.5 rounded-xl text-base font-semibold text-slate-700 hover:bg-brand-50 hover:text-brand-700" data-i18n="navContact">Contact & Address</a>
       <div class="pt-2">
-        <button onclick="openQuickQuoteModal()" class="w-full text-center block px-4 py-3.5 rounded-xl text-xs uppercase font-extrabold text-white bg-brand-700 hover:bg-brand-800 shadow-md" data-i18n="btnRequestQuote">
+        <button onclick="openQuickQuoteModal(); closeMobileMenu();" class="w-full text-center block px-4 py-3.5 rounded-xl text-xs uppercase font-extrabold text-white bg-brand-700 hover:bg-brand-800 shadow-md" data-i18n="btnRequestQuote">
           Request a Bulk Quote
         </button>
       </div>
@@ -2959,6 +2959,11 @@
         }
       }
     }
+
+    // Auto-close drawer on link click for seamless iPad/mobile UX
+    document.querySelectorAll('#mobileMenu a').forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
 
     if (mobileMenuBtn && mobileMenu) {
       mobileMenuBtn.addEventListener('click', (e) => {
